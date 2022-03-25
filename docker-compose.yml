@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/src:/app/src
+    environment:
+      NODE_OPTIONS: --openssl-legacy-provider
+      CHOKIDAR_USEPOLLING: 1
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+  backend:
+    build: ./backend
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_PASSWORD=abc123
+      - API_HOST=api
+      - FLASK_APP=allocation/entrypoints/flask_app.py
+      - FLASK_DEBUG=1
+    volumes:
+      - ./backend/src:/src
+    entrypoint: 
+      - flask
+      - run
+      - --host=0.0.0.0
+      - --port=80
+      # - python
+      # - allocation/entrypoints/flask_app.py
+    ports:
+      - 5005:80
+  postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER=allocation
+      - POSTGRES_PASSWORD=abc123
+    volumes:
+      - shop_data:/var/lib/postgresql/data/
+    ports:
+      - 54321:5432
+
+volumes:
+  shop_data:
