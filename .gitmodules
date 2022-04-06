@@ -6,4 +6,5 @@
 	url = https://github.com/yogoh31/Shop-Frontend
 [submodule "apis_gateway"]
 	path = apis_gateway
-	url = ./Shop-ApiGateway
+	url = https://github.com/yogoh31/Shop-ApisGateway
+	branch = master
