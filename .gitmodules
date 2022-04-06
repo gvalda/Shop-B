@@ -1,5 +1,5 @@
 [submodule "backend"]
-	path = backend
+	path = catalogue
 	url = https://github.com/yogoh31/Shop-Backend
 [submodule "frontend"]
 	path = frontend
