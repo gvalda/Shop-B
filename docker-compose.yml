@@ -13,37 +13,76 @@ services:
     stdin_open: true
     tty: true
     depends_on:
-      - backend
-  catalogue:
-    build: ./catalogue
+      - apis_gateway
+  apis_gateway:
+    build: ./apis_gateway
     depends_on:
-      - postgres
+      - products
+      - authentication
     environment:
-      - DB_HOST=postgres
-      - DB_PASSWORD=abc123
-      - API_HOST=api
-      - FLASK_APP=allocation/entrypoints/flask_app.py
+      - FLASK_APP=gateway/entrypoints/flask_app.py
       - FLASK_DEBUG=1
     volumes:
-      - ./catalogue/src:/src
+      - ./apis_gateway/src:/src
     entrypoint: 
       - flask
       - run
       - --host=0.0.0.0
       - --port=80
-      # - python
-      # - allocation/entrypoints/flask_app.py
     ports:
-      - 5005:80
+      - '4261:80'
+  authentication:
+    build: ./authentication
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=admin
+      - DB_PASSWORD=abc123
+      - DB_PORT=5432
+      - DB_NAME=shop_db
+      - EMAIL_HOST=localhost
+      - EMAIL_PORT=25
+      - EMAIL_USER=authentication@example.com
+      - API_HOST=api
+      - JWT_SECRET=secret
+      - FLASK_APP=authentication/entrypoints/flask_app.py
+      - FLASK_DEBUG=1
+    volumes:
+      - ./authentication/src:/src
+    entrypoint: 
+      - flask
+      - run
+      - --host=0.0.0.0
+      - --port=80
+  products:
+    build: ./products
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=admin
+      - DB_PASSWORD=abc123
+      - DB_PORT=5432
+      - DB_NAME=shop_db
+      - API_HOST=api
+      - FLASK_APP=products/entrypoints/flask_app.py
+      - FLASK_DEBUG=1
+    volumes:
+      - ./products/src:/src
+    entrypoint: 
+      - flask
+      - run
+      - --host=0.0.0.0
+      - --port=80
   postgres:
     image: postgres:9.6
     environment:
-      - POSTGRES_USER=allocation
+      - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=abc123
+      - POSTGRES_DB=shop_db
     volumes:
       - shop_data:/var/lib/postgresql/data/
-    ports:
-      - 54321:5432
 
 volumes:
   shop_data:
