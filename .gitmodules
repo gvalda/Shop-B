@@ -8,3 +8,6 @@
 	path = apis_gateway
 	url = https://github.com/yogoh31/Shop-ApisGateway
 	branch = master
+[submodule "authentication"]
+	path = authentication
+	url = https://github.com/yogoh31/Shop-Authentication
